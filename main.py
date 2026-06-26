@@ -161,9 +161,9 @@ _ev_sizing_cache = (0.0, False, 1.0)   # (read_ts, enabled, scale) — 30s cache
 
 def _ev_sizing_refresh():
     """Read bots/botN/ev_sizing.json once per 30s → (enabled, scale).
-    `scale` (clamped 0..1, default 1.0) damps the EV target — this is the SIZE GENE
-    knob for the prestige race: Bot1 full (no scale / 1.0), Bot2 moderate (e.g. 0.5),
-    Bot3 control (no file → EV-sizing off). Never raises."""
+    `scale` (clamped 0..1, default 1.0) damps the EV target — this is the SIZE-GENE
+    knob: 1.0 = full EV target, lower = damped, no file → EV-sizing off (the default).
+    Armed only by the gates, never by hand (THE ONE RULE). Never raises."""
     global _ev_sizing_cache
     if time.time() - _ev_sizing_cache[0] < 30.0:
         return _ev_sizing_cache

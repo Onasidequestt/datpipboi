@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Vault-Bot Execution Audit
+Dat Pip Boi Execution Audit
 
 Default:        Fleet Health Score + compact per-bot table + recommendations.
 --report-full:  Everything above + per-token slippage breakdown with penalty
@@ -586,7 +586,7 @@ def analyze_bot(name: str, db_path: str) -> dict:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Vault-Bot execution audit: latency, drift, and penalty correlation.",
+        description="Dat Pip Boi execution audit: latency, drift, and penalty correlation.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 examples:
