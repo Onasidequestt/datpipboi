@@ -604,7 +604,7 @@ examples:
 
     ts_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     mode   = "FULL" if args.report_full else "SUMMARY  (--report-full for breakdown + CSV)"
-    print(f"VAULT-BOT EXECUTION AUDIT  {ts_str}  |  {mode}")
+    print(f"DAT PIP BOI EXECUTION AUDIT  {ts_str}  |  {mode}")
     print(f"Signal match window: {SIGNAL_MATCH_WINDOW_S}s  |  Min token trades: {_MIN_TOKEN_TRADES}")
 
     results = []

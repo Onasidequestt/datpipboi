@@ -1,7 +1,7 @@
 # CLAUDE.md — operating guide for Dat Pip Boi
 
 You are helping someone run **their own** Dat Pip Boi: an autonomous Solana
-memecoin trading fleet with a live dashboard and an evidence-gated learning
+memecoin trading bot with a live dashboard and an evidence-gated learning
 loop. This file is your map and your rulebook. Read it before acting.
 
 The person you're helping owns the wallet and the risk. Your job is to help them
@@ -28,7 +28,7 @@ The person you're helping owns the wallet and the risk. Your job is to help them
    Never push to a remote without the user's explicit go-ahead.
 
 4. **Default to read-only first.** Diagnose with the read-only tools before
-   changing live behavior. Confirm the fleet is actually running before
+   changing live behavior. Confirm the bot is actually running before
    concluding anything from logs (see "Liveness" below).
 
 5. **Be honest about the edge.** A durable positive edge is hard and frequently
@@ -44,8 +44,7 @@ server, no browser. When the user says anything like *"how's my bot?"*,
 *"how's it doing?"*, *"check the bot"*, *"status?"*, *"are we up?"* — run:
 
 ```bash
-python3 vault_status.py            # bot 1 (the default)
-python3 vault_status.py --all      # every bot they're running
+python3 vault_status.py            # the bot (the default)
 python3 vault_status.py --trades 8 # more recent trades
 ```
 
@@ -64,14 +63,14 @@ analysis, reach for the gate/edge tools below.
 
 ## What this system is
 
-A shared **discovery sidecar** streams candidate tokens to a **fleet of bots**;
-each bot scores candidates, decides admission, sizes from its live wallet
-balance, executes via Jupiter, and manages exits. A **dashboard** shows it all.
-An **evidence loop** logs the forward return of everything scored and learns
-which rules actually pay — and **gates** decide if/when to ever size an edge up.
+A **discovery sidecar** streams candidate tokens to the **bot**; the bot scores
+candidates, decides admission, sizes from its live wallet balance, executes via
+Jupiter, and manages exits. A **dashboard** shows it all. An **evidence loop**
+logs the forward return of everything scored and learns which rules actually
+pay — and **gates** decide if/when to ever size an edge up.
 
 ```
-data sources → discovery_service.py (sidecar) → bots (main.py ×N) → dashboard.py
+data sources → discovery_service.py (sidecar) → bot (main.py) → dashboard.py
                                                       │
                               signal_lab → strategy_brain → gates (arm sizing)
 ```
@@ -79,7 +78,7 @@ data sources → discovery_service.py (sidecar) → bots (main.py ×N) → dashb
 ## Key files
 
 **Trading core**
-- `main.py` — the per-bot loop: signals · execution · exits · the sizing block.
+- `main.py` — the bot's loop: signals · execution · exits · the sizing block.
 - `observer.py` — candidate discovery + scoring + admission decisions.
 - `stoic_strategy.py` — position lifecycle: stops, trails, take-profit, rug/drain
   guards, dead-pool exits.
@@ -128,7 +127,7 @@ data sources → discovery_service.py (sidecar) → bots (main.py ×N) → dashb
 ## Running & restarting
 
 ```bash
-./run.sh                 # start everything (sidecar + dashboard + bots)
+./run.sh                 # start everything (sidecar + dashboard + bot)
 # stop: Ctrl-C in that terminal (it tears down the whole process group)
 ```
 
@@ -143,7 +142,7 @@ data sources → discovery_service.py (sidecar) → bots (main.py ×N) → dashb
 ## Liveness (don't trust log greps alone)
 
 The run log is block-buffered, so advancing log lines aren't proof of life.
-Confirm the fleet is alive via:
+Confirm the bot is alive via:
 - `bots/botN/status.json` mtime (freshly updated), and
 - `shared_memory/sidecar_heartbeat.json`, and
 - the actual `main.py` / `discovery_service.py` processes.
@@ -169,15 +168,16 @@ When you propose changes, prefer ones that the gates can still judge honestly.
   (https://account.bitquery.io), then write `.env` (you may run `python3
   setup.py`, or set the values — but **never echo the secret values back** in
   chat). Then they click **Activate** in the dashboard, which generates the
-  wallet and starts trading. Restart the fleet after `.env` changes.
+  wallet and starts trading. Restart the bot after `.env` changes.
 - **"Is it making money?"** → `python3 edge_report.py --by-play`,
   `python3 prestige_tracker.py`, `python3 kill_criterion.py`. Report honestly,
   including when the answer is "no / not proven."
 - **"Why did it (not) trade X?"** → the `SCOUT` tab + the bot's logs carry skip
   reasons; the ledger (`trades.db` / `LEDGER` tab) carries exit reasons.
 - **"Restart it"** → Ctrl-C the `run.sh` terminal, `./run.sh`. Verify liveness.
-- **"Tune the strategy"** → explain the tradeoff, prefer a per-bot canary file
-  and/or one-bot A/B, keep it reversible, never touch `ev_sizing.json` by hand.
+- **"Tune the strategy"** → explain the tradeoff, prefer a `bots/botN/` canary
+  file (opt-in, reversible — delete it to revert), keep it reversible, never
+  touch `ev_sizing.json` by hand.
 
 ## Boundaries — pause and ask the user before:
 

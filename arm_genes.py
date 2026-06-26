@@ -113,7 +113,7 @@ def main(arm=False):
     print("  🚀 DEPLOY GATE PASS — the deep_pool edge is proven +EV live.")
     if arm:
         _write_genes((n, net, gr))
-        print("  ✅ Size genes ACTIVATED. The real prestige race begins now.")
+        print("  ✅ Size genes ACTIVATED. Sizing is now armed.")
     else:
         print("  → run `python3 arm_genes.py --arm` to activate the three genes.")
     print("=" * 64)

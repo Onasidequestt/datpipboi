@@ -1,5 +1,5 @@
 """
-VAULT-BOT STRATEGY ENGINE
+DAT PIP BOI STRATEGY ENGINE
 --------------------------
 Core mission: Accumulate SOL. Reach 2.0. Repay 1.0 to the wallet that funded this.
 This bot exists to settle a debt. Every trade, every cycle, every gain serves that purpose.
@@ -677,7 +677,7 @@ WILD_PLAYS = {
 # ── S64: STOIC plays — "The Vault Keeper" (lowest variance, banks early) ──────
 # One disciplined archetype: a clean deep-liquidity momentum entry, banked at a
 # modest TP with a tight stop. ride=False → never trails, never chases the moon.
-# Small size, slow cadence — the safe tortoise of the prestige race.
+# Small size, slow cadence — the safe, low-variance tortoise.
 STOIC_PLAYS = {
     "bank": {
         "take_profit_pct": 8.0,

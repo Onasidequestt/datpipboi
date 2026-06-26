@@ -1,6 +1,6 @@
 # Setting up your own Dat Pip Boi
 
-This walks you from zero to a running fleet on the dashboard. Budget ~15–20 min.
+This walks you from zero to a running bot on the dashboard. Budget ~15–20 min.
 If you have Claude Code, you can also just say *"help me set up this repo"* — the
 included [`CLAUDE.md`](CLAUDE.md) gives it everything it needs to do this with you.
 
@@ -48,7 +48,7 @@ trade from the live wallet balance, so a small balance = small trades.
 2. Copy the **API key**.
 
 The free tier is enough to begin. (You can add more keys later to spread rate
-limits across bots — see `HELIUS_API_KEY_1..3` in `.env.example`.)
+limits — see `HELIUS_API_KEY_1..3` in `.env.example`.)
 
 ## 5. Run it
 
@@ -56,7 +56,7 @@ limits across bots — see `HELIUS_API_KEY_1..3` in `.env.example`.)
 ./run.sh
 ```
 
-This starts the **discovery sidecar**, the **dashboard**, and the **bots**, and
+This starts the **discovery sidecar**, the **dashboard**, and the **bot**, and
 prints your **dashboard PIN**. Open:
 
 ```
@@ -71,7 +71,7 @@ On first run the dashboard shows a **setup page**. Enter:
 - your **Helius** API key *(required — link to get one is on the page)*,
 - your **Bitquery** key *(optional)*,
 
-…and click **Save & continue**. Then restart the fleet (`Ctrl-C`, `./run.sh`) and
+…and click **Save & continue**. Then restart the bot (`Ctrl-C`, `./run.sh`) and
 reload — the full dashboard appears.
 
 > **Prefer not to use the browser?** Two alternatives, same result:
@@ -83,14 +83,14 @@ reload — the full dashboard appears.
 
 > **On Linux** (no `caffeinate`): run the sidecar + dashboard directly instead of `./run.sh`:
 > ```bash
-> python3 discovery_service.py &      # the shared sidecar
-> python3 dashboard.py                # the dashboard (spawns the bots)
+> python3 discovery_service.py &      # the discovery sidecar
+> python3 dashboard.py                # the dashboard (spawns the bot)
 > ```
 
-## 7. Deploy a bot
+## 7. Deploy the bot
 
-In the dashboard, a bot starts **undeployed**. Click to deploy bot #1 — it will
-either generate a keypair for that bot or use the one at `KEYPAIR_PATH`. Fund
+In the dashboard, the bot starts **undeployed**. Click to deploy it — it will
+either generate a keypair for the bot or use the one at `KEYPAIR_PATH`. Fund
 that wallet, and the bot begins trading on the next cycle.
 
 Start by just **watching**: the dashboard shows every candidate scored, every
@@ -102,26 +102,25 @@ you scale anything.
 ## Operating it
 
 - **Dashboard tabs:** `SCOUT` (what it's seeing), `TRADE` (live positions),
-  `LEDGER` (every closed trade + why), `GENE` (per-bot internals + the gate).
-- **Restart the fleet:** `Ctrl-C` in the `run.sh` terminal, then `./run.sh` again.
+  `LEDGER` (every closed trade + why), `GENE` (the bot's internals + the gate).
+- **Restart the bot:** `Ctrl-C` in the `run.sh` terminal, then `./run.sh` again.
 - **Read-only health/analysis tools** (safe to run anytime):
   ```bash
-  python3 prestige_tracker.py     # balances, the deploy gate, days-to-goal
+  python3 prestige_tracker.py     # balance, the deploy gate, days-to-goal
   python3 edge_report.py --by-play # realized edge by strategy, fee-aware
   python3 kill_criterion.py        # the pre-registered "is the edge real?" verdict
-  python3 race.py                  # the prestige-race leaderboard
   ```
 
 ## Changing settings (the easy knobs)
 
 | What | How |
 |---|---|
-| **Max trade size** | In the dashboard, use the per-bot **size buttons**: `small` / `medium` / `large` = 50% / 75% / 100% of wallet max per trade. (Writes `bots/botN/size_mode.json`.) |
+| **Max trade size** | In the dashboard, use the **size buttons**: `small` / `medium` / `large` = 50% / 75% / 100% of wallet max per trade. (Writes `bots/botN/size_mode.json`.) |
 | **RPC node** | Set `RPC_URL=...` in `.env` to route through a custom node, or leave blank to use Helius. Re-run `python3 setup.py` to set it interactively. |
 | **API keys / capital / wallet path** | Re-run `python3 setup.py` anytime — it keeps your current values as defaults. |
-| **Pause / deploy a bot** | Dashboard buttons (unlock with your PIN first). |
+| **Pause / deploy the bot** | Dashboard buttons (unlock with your PIN first). |
 
-Restart the fleet after changing `.env` (`Ctrl-C`, then `./run.sh`). Dashboard
+Restart the bot after changing `.env` (`Ctrl-C`, then `./run.sh`). Dashboard
 size buttons take effect live — no restart needed.
 
 ## The one rule
@@ -134,8 +133,8 @@ This is rule #1 in [`CLAUDE.md`](CLAUDE.md) too.
 ## Optional extras
 
 - **Reboot-durable uptime (macOS):** `deploy/README.md` sets up LaunchAgents so
-  the fleet survives reboots and crashes.
-- **Public Telegram bridge:** `telegram/` broadcasts a sanitized fleet pulse.
+  the bot survives reboots and crashes.
+- **Public Telegram bridge:** `telegram/` broadcasts a sanitized status pulse.
 - **Advisory Claude agents:** `agents/` runs hourly analysts (needs an
   `ANTHROPIC_API_KEY`). Advisory only — they never touch your funds.
 

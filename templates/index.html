@@ -192,6 +192,13 @@ body::after {
 .row2-sep-label { font-size: 11px; letter-spacing: .15em; color: #1a2e1a; white-space: nowrap; transition: color .4s; }
 .row2-sep-label.unlocked { color: var(--gdim); }
 
+/* ── SINGLE-BOT MODE — hide the multi-bot race surfaces ──
+   Dat Pip Boi is one bot, so the GENE/race-trajectory tab, the
+   leader crown, and the expansion-fleet row are not shown. */
+.tier-folder.t4 { display: none !important; }
+[id$="-crown"]  { display: none !important; }
+.row2-sep, #fleet-grid-2 { display: none !important; }
+
 /* ── LOCKED SLOT ── */
 .slot-locked { border-color: var(--gdk) !important; box-shadow: none !important; opacity: .22; transition: opacity .35s; cursor: help; }
 
@@ -1933,7 +1940,7 @@ button, a, input, .slot-header, .think-toggle, .tok-link, .modal-btn {
     position: absolute; top: 12px; right: 12px; z-index: 6;
     box-shadow: 0 2px 10px rgba(0,0,0,.35);
   }
-  /* immersive top-left reads the brand, not "VAULT-BOT #N" */
+  /* immersive top-left reads the brand wordmark */
   .vault-slot.immersive .slot-num { font-size: 0; }
   .vault-slot.immersive .slot-num::before {
     content: "DAT PIP BOI"; font-size: 19px; letter-spacing: .04em;
@@ -2106,7 +2113,7 @@ button:focus-visible, a:focus-visible, .tier-btn:focus-visible, .slot-header:foc
       <span class="flogo-txt">Dat Pip Boi</span>
     </div>
     <div id="fleet-meta">
-      <span id="active-count" data-tip="Active bots"><span style="color:var(--g)">1</span><span>/6</span> ACTIVE</span>
+      <span id="active-count" data-tip="Bot status"><span style="color:var(--g)">1</span> ACTIVE</span>
       <div class="dot" id="statusDot" data-tip="Fleet connection"></div>
       <span id="statusText" data-tip="Fleet status">CONNECTING</span>
       <span data-tip="Combined daily PnL">PNL: <span id="hdr-pnl" style="text-shadow:var(--glow-sm)">◎0.0000</span></span>
@@ -2139,8 +2146,8 @@ button:focus-visible, a:focus-visible, .tier-btn:focus-visible, .slot-header:foc
             <circle cx="10" cy="10" r="3.2" fill="none" stroke="#3DFB6E" stroke-width="1"/>
             <circle cx="10" cy="10" r="1.4" fill="#3DFB6E"/>
           </svg>
-          <span class="slot-num" style="color:var(--g);text-shadow:var(--glow-sm)" data-tip="Click to collapse">VAULT-BOT #1</span>
-          <span id="slot-1-crown" style="display:none;color:#ffcc00;text-shadow:0 0 10px #ffcc00,0 0 22px #FFB454;font-size:16px;margin-left:4px" data-tip="♛ Leading">♛</span>
+          <span class="slot-num" style="color:var(--g);text-shadow:var(--glow-sm)" data-tip="Click to collapse">Dat Pip Boi</span>
+          <span id="slot-1-crown" style="display:none;color:#ffcc00;text-shadow:0 0 10px #ffcc00,0 0 22px #FFB454;font-size:16px;margin-left:4px" data-tip="♛ Prestige">♛</span>
           <span id="slot-1-prestige-badge" class="prestige-badge" data-tip="Prestige count — milestone completions"></span>
           <span class="trade-dot" id="s1-trade-dot" data-tip="Active positions">● IN TRADE</span>
           <div class="shdr-actions">
@@ -2206,7 +2213,7 @@ button:focus-visible, a:focus-visible, .tier-btn:focus-visible, .slot-header:foc
           </button>
         </div>
         <div class="tier-folder t4" id="s1-t4-folder">
-          <button class="tier-btn" onclick="toggleTier(1,4)" data-tip="GENE — this bot's size gene + the prestige-race trajectory">
+          <button class="tier-btn" onclick="toggleTier(1,4)" data-tip="GENE — this bot's size gene + total ◎ over time">
             <span class="tier-icon">⌬</span>
             <span class="tier-label">GENE</span>
           </button>
@@ -2324,27 +2331,9 @@ button:focus-visible, a:focus-visible, .tier-btn:focus-visible, .slot-header:foc
 
     </div><!-- /slot-1 -->
 
-    <!-- BOT 2 — JS-rendered -->
-    <div class="vault-slot offline-slot" id="slot-2"></div>
-
-    <!-- BOT 3 — JS-rendered -->
-    <div class="vault-slot offline-slot" id="slot-3"></div>
-
   </div><!-- /fleet-grid -->
 
-  <!-- ROW 2 SEPARATOR -->
-  <div class="row2-sep">
-    <div class="row2-sep-line"></div>
-    <span class="row2-sep-label" id="row2-sep-label">▼ EXPANSION FLEET — LOCKED</span>
-    <div class="row2-sep-line"></div>
-  </div>
-
-  <!-- FLEET GRID ROW 2 — unlocks when any bot achieves first prestige (◎2.0) -->
-  <div id="fleet-grid-2">
-    <div class="vault-slot offline-slot" id="slot-4"></div>
-    <div class="vault-slot offline-slot" id="slot-5"></div>
-    <div class="vault-slot offline-slot" id="slot-6"></div>
-  </div>
+  <!-- single bot: no expansion-fleet row 2 -->
 
   <!-- REASONING AGENTS — ADMIN ONLY (.vault-ctrl: hidden for spectators, shown when unlocked) -->
   <div id="agents-panel" class="vault-ctrl" style="margin:20px 16px 10px">
@@ -3001,7 +2990,7 @@ function _renderSlot1Inactive(wallet){
     <div class="slot-header">
       <div class="shdr-row1">
         <div class="dot offline"></div>
-        <span class="slot-num" style="color:#886600">○ VAULT-BOT #1</span>
+        <span class="slot-num" style="color:#886600">○ Dat Pip Boi</span>
         <div class="shdr-actions">
           <button id="inactive-activate-btn-1" class="activate-btn vault-ctrl" onclick="showInactiveDeposit(1)" style="font-size:14px;padding:2px 10px;border-color:#886600;color:#886600" data-tip="Show wallet address to fund and reactivate">▶ ACTIVATE</button>
         </div>
@@ -3294,8 +3283,8 @@ function _genePoolStrip(race, botId, fullPct){
 // Generation + lineage chip — gen-1 origin, or gen-N propagated from a prestige winner.
 function _geneGenChip(me){
   const gen=me.gen||1;
-  if(gen<=1 || me.parent==null) return '<span class="gene-gen" data-tip="Generation 1 — the founding gene pool. A bot reaching ◎2.0 seeds generation 2 by propagating its winning gene.">⌬ GEN 1</span>';
-  return '<span class="gene-gen gene-gen-evo" data-tip="This gene was inherited — generation '+gen+', propagated from the prestige winner UNIT-0'+me.parent+'. The lineage is evolving.">⌬ GEN '+gen+' ← UNIT-0'+me.parent+'</span>';
+  if(gen<=1 || me.parent==null) return '<span class="gene-gen" data-tip="Generation 1 — this bot\'s founding size gene.">⌬ GEN 1</span>';
+  return '<span class="gene-gen gene-gen-evo" data-tip="Generation '+gen+' — this bot\'s size gene has evolved.">⌬ GEN '+gen+'</span>';
 }
 
 function renderGene(botId){
@@ -3308,7 +3297,7 @@ function renderGene(botId){
   const ck=(ok,lbl)=>'<div class="gene-ck"><span>'+(ok?'✓':'○')+'</span>'+lbl+'</div>';
   let h='<div class="gene-wrap">';
   // header
-  h+='<div class="gene-hdr" data-tip="Evolutionary identity for this bot — its SIZE gene and current rank in the prestige race. First bot to the goal wins; its gene seeds the next generation."><span class="gene-dna-ico">🧬</span><span>GENE · EVOLUTION</span>'+_geneGenChip(me)+'<span class="gene-rank">RANK #'+(me.rank||'?')+'</span></div>';
+  h+='<div class="gene-hdr" data-tip="Evolutionary identity for this bot — its SIZE gene and progress toward the ◎2.0 prestige goal."><span class="gene-dna-ico">🧬</span><span>GENE · EVOLUTION</span>'+_geneGenChip(me)+'</div>';
   // DNA + name/state
   h+='<div class="gene-id-row">'+_geneDNA(me.gene_short,me.armed)
     +'<div class="gene-id"><div class="gene-name" style="color:'+col+'" data-tip="The SIZE gene this bot carries — how aggressively it sizes each bet once the edge is proven. The only trait that differs across the three bots.">'+(me.gene||'—')+'</div>'
@@ -3351,7 +3340,7 @@ function renderGene(botId){
   // genotype codon strip — the gene's mutating base-pair fingerprint
   h+='<div class="gene-sect-lbl" data-tip="A base-pair fingerprint of the SIZE gene. Deterministic from allele·scale·generation, so the strip mutates visibly whenever the gene evolves.">⌬ GENOTYPE</div>'+_geneCodons(me).html;
   // balance + progress
-  h+='<div class="gene-bal" data-tip="Total SOL this bot holds, and the change since the race began."><span>◎'+(me.total||0).toFixed(4)+'</span><span class="gene-delta">'
+  h+='<div class="gene-bal" data-tip="Total SOL this bot holds, and the change since it began."><span>◎'+(me.total||0).toFixed(4)+'</span><span class="gene-delta">'
     +((me.delta>=0?'+':'')+(me.delta||0).toFixed(4))+'◎ since start</span></div>';
   h+='<div class="gene-prog" data-tip="Progress toward the prestige goal (◎2.0)."><div class="gene-prog-fill" style="width:'+pct.toFixed(1)+'%;background:'+col+'"></div>'
     +'<span class="gene-prog-lbl">'+pct.toFixed(1)+'%  →  ◎'+(race.goal||2).toFixed(1)+'</span></div>';
@@ -3377,7 +3366,7 @@ function renderGene(botId){
       +'<span class="gene-edge-stat">◎'+((o.size_sol||0).toFixed(4))+(o.be?' · BE✓':'')+(o.tp1?' · TP1':'')+'</span></div>'; });
   } else { h+='<div class="gene-ck"><span>·</span>flat — scanning for a filling deep pool</div>'; }
   // trajectory
-  h+='<div class="gene-sect-lbl" data-tip="Total SOL plotted over time against the prestige goal — the shape of this bot’s race so far.">RACE TRAJECTORY · total ◎ over time</div>'+_trajChart(race,botId);
+  h+='<div class="gene-sect-lbl" data-tip="Total SOL plotted over time against the ◎2.0 prestige goal.">TRAJECTORY · total ◎ over time</div>'+_trajChart(race,botId);
   // 📋 recent decisions (grows as trades commence)
   h+='<div class="gene-sect-lbl" data-tip="Most recent closed trades — play type and realized SOL. ◇ marks a ghost (token could not be sold).">📋 RECENT DECISIONS</div>';
   if((me.recent||[]).length){
@@ -4768,7 +4757,7 @@ function _renderTier3(botId, live, t3, th, mem) {
   if (_recov != null && Math.abs(_recov) >= 0.005) {
     const _rcCol = _recov >= 0 ? '#3DFB6E' : '#FFD2C4';
     h += '<div style="width:1px;background:#0a2a0a;flex-shrink:0;margin:0 2px"></div>';
-    h += '<div style="display:flex;flex-direction:column;align-items:center;min-width:60px" data-tip="SOL in the wallet that did NOT come from a closed trade — recovered from stranded token positions (orphan sweep-sells), net of fees. THIS is why Total SOL (the graph) can rise while the trade log is all red. NET ◎ + RECOVERED ◎ = your real wallet change since the race began.">';
+    h += '<div style="display:flex;flex-direction:column;align-items:center;min-width:60px" data-tip="SOL in the wallet that did NOT come from a closed trade — recovered from stranded token positions (orphan sweep-sells), net of fees. THIS is why Total SOL (the graph) can rise while the trade log is all red. NET ◎ + RECOVERED ◎ = your real wallet change since the bot began.">';
     h += '<div style="font-size:16px;color:'+_rcCol+';text-shadow:0 0 6px '+_rcCol+';line-height:1.2">'+(_recov>=0?'+':'')+_recov.toFixed(3)+'</div>';
     h += '<div style="font-size:8px;color:#1a3a1a;letter-spacing:.1em">RECOVERED ◎</div></div>';
   }
@@ -5303,7 +5292,7 @@ function togglePause(botId){
   }
   // Pausing: show confirmation with warning about exits + 30s wait
   showConfirmModal(
-    `⏸ PAUSE VAULT-BOT #${botId}`,
+    `⏸ PAUSE Dat Pip Boi`,
     `All open positions will be exited on the next cycle (~30 seconds).\n\nThe bot will stop entering new trades until you resume it.\n\nAllow up to 30 seconds after pausing for on-chain\ntransactions to confirm and balances to update.\n\nYou can resume at any time from this button.`,
     'PAUSE BOT',
     () => _doPause(botId),
@@ -5323,7 +5312,7 @@ async function showDrainModal(botId){
 
   if(!preview.ok){
     showConfirmModal(
-      `⬇ DRAIN VAULT-BOT #${botId}`,
+      `⬇ DRAIN Dat Pip Boi`,
       `Unable to load drain details:\n${preview.error}`,
       'CLOSE', closeConfirmModal, false
     );
@@ -5349,7 +5338,7 @@ async function showDrainModal(botId){
   ].join('\n');
 
   showConfirmModal(
-    `⬇ DRAIN VAULT-BOT #${botId}`,
+    `⬇ DRAIN Dat Pip Boi`,
     desc,
     `SEND ◎${sendAmt} BACK`,
     async () => {
@@ -5384,41 +5373,16 @@ async function fetchFleet(){
       renderSlot(bot);
     }
 
-    // Row 2 unlock toast + separator label update
-    const prevUnlocked=window._row2WasUnlocked;
+    // single bot: no expansion-fleet row 2 to unlock
     window._row2WasUnlocked=row2Unlocked;
-    const sepLabel=document.getElementById('row2-sep-label');
-    if(row2Unlocked){
-      if(sepLabel){ sepLabel.textContent='◈ EXPANSION FLEET — ACTIVE'; sepLabel.classList.add('unlocked'); }
-      if(prevUnlocked===false){
-        showToast('⚡ ROW 2 UNLOCKED — FIRST PRESTIGE ACHIEVED','#ffcc00','row2-unlock');
-      }
-    } else {
-      if(sepLabel){ sepLabel.textContent='▼ EXPANSION FLEET — LOCKED'; sepLabel.classList.remove('unlocked'); }
-      // Update progress hint in each locked slot
-      _updateLockedRow2Progress();
-    }
 
     const ac=document.getElementById('active-count');
-    if(ac) ac.innerHTML=`<span style="color:var(--g)">${activeCount}</span><span>/6</span> ACTIVE`;
+    if(ac) ac.innerHTML=`<span style="color:var(--g)">${activeCount}</span> ACTIVE`;
   }catch(e){ console.error('fetchFleet',e); }
 }
 
 function _updateLockedRow2Progress(){
-  const GOAL=2.0;
-  let bestPct=0, bestBotId=null;
-  for(const [bid,rd] of Object.entries(_rivalData)){
-    const pct=Math.min(100,(rd.sol/GOAL)*100);
-    if(pct>bestPct){ bestPct=pct; bestBotId=bid; }
-  }
-  for(let id=4;id<=6;id++){
-    const el=document.getElementById(`row2-prog-${id}`);
-    if(!el) continue;
-    const progLine=bestBotId&&bestPct>0
-      ?`LEADER: BOT #${bestBotId} — ${Math.round(bestPct)}% TO ◎2.0`
-      :'AWAITING BOT PROGRESS';
-    el.innerHTML=`EXPANSION FLEET SLOT\n─────────────────────\nUNLOCKS WHEN ANY BOT\nREACHES ◎2.0 PRESTIGE\n(FIRST PAYOUT SENT)\n─────────────────────\n${progLine}`;
-  }
+  // single bot: no expansion-fleet row to update.
 }
 
 function renderSlot(bot){
@@ -5469,7 +5433,7 @@ function renderStartingSlot(slot, bot){
           <circle cx="10" cy="10" r="3.2" fill="none" stroke="#3DFB6E" stroke-width="1"/>
           <circle cx="10" cy="10" r="1.4" fill="#3DFB6E"/>
         </svg>
-        <span class="slot-num" style="color:var(--gdim)" data-tip="Click to collapse / expand">VAULT-BOT #${id}</span>
+        <span class="slot-num" style="color:var(--gdim)" data-tip="Click to collapse / expand">Dat Pip Boi</span>
         <span class="shdr-chevron" style="margin-left:auto" data-tip="Collapse / expand">▾</span>
       </div>
       <div class="shdr-row2">
@@ -5606,7 +5570,7 @@ function renderLockedSlot(slot, bot) {
     <div class="slot-header" data-tip="${lockTip}">
       <div class="shdr-row1">
         <div class="dot offline"></div>
-        <span class="slot-num">○ VAULT-BOT #${id}</span>
+        <span class="slot-num">○ Dat Pip Boi</span>
         <div class="shdr-actions">
           <button class="activate-btn" disabled style="opacity:.35;cursor:not-allowed;pointer-events:none;font-size:14px;padding:2px 10px" data-tip="Locked — reach ◎2.0 prestige first">▶ ACTIVATE</button>
         </div>
@@ -5625,7 +5589,7 @@ function renderInactiveSlot(slot,bot){
     <div class="slot-header">
       <div class="shdr-row1">
         <div class="dot offline"></div>
-        <span class="slot-num" style="color:#886600">○ VAULT-BOT #${id}</span>
+        <span class="slot-num" style="color:#886600">○ Dat Pip Boi</span>
         <div class="shdr-actions">
           <button id="inactive-activate-btn-${id}" class="activate-btn vault-ctrl" onclick="showInactiveDeposit(${id})" style="font-size:14px;padding:2px 10px;border-color:#886600;color:#886600" data-tip="Show wallet address to fund and reactivate">▶ ACTIVATE</button>
         </div>
@@ -5649,7 +5613,7 @@ function renderUndeployedSlot(slot,bot){
     <div class="slot-header">
       <div class="shdr-row1">
         <div class="dot offline"></div>
-        <span class="slot-num">○ VAULT-BOT #${id}</span>
+        <span class="slot-num">○ Dat Pip Boi</span>
         <div class="shdr-actions">
           <button id="activate-btn-${id}" class="activate-btn" onclick="activateBot(${id})" style="font-size:14px;padding:2px 10px" data-tip="Generate a new wallet and start Bot #${id}">▶ ACTIVATE</button>
         </div>
@@ -5667,7 +5631,7 @@ function renderPendingSlot(slot,bot){
     <div class="slot-header">
       <div class="shdr-row1">
         <div class="dot pending"></div>
-        <span class="slot-num" style="color:#886600">◌ VAULT-BOT #${id}</span>
+        <span class="slot-num" style="color:#886600">◌ Dat Pip Boi</span>
         <div class="shdr-actions">
           <button id="pending-addr-btn-${id}" class="activate-btn vault-ctrl" onclick="showPendingDeposit(${id})" style="font-size:14px;padding:2px 10px;border-color:#886600;color:#886600" data-tip="Show deposit address">▶ ACTIVATE</button>
         </div>
@@ -6024,7 +5988,7 @@ function renderActiveSlot(slot,bot){
           <circle cx="10" cy="10" r="3.2" fill="none" stroke="#3DFB6E" stroke-width="1"/>
           <circle cx="10" cy="10" r="1.4" fill="#3DFB6E"/>
         </svg>
-        <span class="slot-num" style="color:var(--g);text-shadow:var(--glow-sm)" data-tip="Click to collapse">VAULT-BOT #${id}</span>
+        <span class="slot-num" style="color:var(--g);text-shadow:var(--glow-sm)" data-tip="Click to collapse">Dat Pip Boi</span>
         <span id="slot-${id}-crown" style="display:none;color:#ffcc00;text-shadow:0 0 10px #ffcc00,0 0 22px #FFB454;font-size:16px;margin-left:4px" data-tip="♛ Leading">♛</span>
         <span id="slot-${id}-prestige-badge" class="prestige-badge" data-tip="Prestige count — milestone completions"></span>
         <span class="trade-dot" id="s${id}-trade-dot" data-tip="Active positions">● IN TRADE</span>
@@ -6093,7 +6057,7 @@ function renderActiveSlot(slot,bot){
         </button>
       </div>
       <div class="tier-folder t4" id="s${id}-t4-folder">
-        <button class="tier-btn" onclick="toggleTier(${id},4)" data-tip="GENE — this bot's size gene + the prestige-race trajectory">
+        <button class="tier-btn" onclick="toggleTier(${id},4)" data-tip="GENE — this bot's size gene + total ◎ over time">
           <span class="tier-icon">⌬</span>
           <span class="tier-label">GENE</span>
         </button>
@@ -7235,10 +7199,8 @@ const BOOT_LINES = [
   { t: 'GECKOTERMINAL — 6 PARALLEL SOURCES ARMED',          hi: false },
   { t: 'RUGCHECK SAFETY ORACLE — STANDBY',                  hi: false },
   { t: 'JITO BLOCK ENGINE — SLC PRIMARY [280ms]',           hi: false },
-  { t: 'READING FLEET REGISTRY...',                         hi: false },
-  { t: 'SLOT 1: VAULT-BOT #1 ——— RUNNING  ◉ INSANE + LOW', hi: true  },
-  { t: 'SLOT 2: VAULT-BOT #2 ——— INACTIVE (DRAINED)',       hi: false },
-  { t: 'SLOT 3: VAULT-BOT #3 ——— UNDEPLOYED',               hi: false },
+  { t: 'READING BOT REGISTRY...',                           hi: false },
+  { t: 'DAT PIP BOI ——— RUNNING  ◉ o shit waddup',          hi: true  },
   { t: 'STRATEGY ENGINE: WILD / STOIC / INSANE — LOADED',   hi: false },
   { t: 'DISCOVERY: GEM HUNT ENGINE ARMED',                  hi: false },
   { t: 'CONFIDENCE CURVE: SIZING MODEL CALIBRATED',         hi: false },
@@ -7247,7 +7209,7 @@ const BOOT_LINES = [
   { t: 'PRESTIGE GUARD: ◎2.0 DRAIN LOGIC — ARMED',          hi: false },
   { t: 'AUDIT LOG: trades.db — OPEN',                       hi: false },
   { t: 'ALL SYSTEMS NOMINAL.',                              hi: true  },
-  { t: 'DAT PIP BOI — FLEET ONLINE.',                            hi: true  },
+  { t: 'DAT PIP BOI — ONLINE.  o shit waddup',                  hi: true  },
 ];
 
 function delay(ms){ return new Promise(r=>setTimeout(r,ms)); }

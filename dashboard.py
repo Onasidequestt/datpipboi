@@ -1,6 +1,6 @@
 """
-VAULT FLEET — Dashboard & Process Manager
-One dashboard runs all bots. Bots are headless processes managed here.
+Dat Pip Boi — Dashboard & Process Manager
+The dashboard runs the bot as a headless process managed here.
 """
 import asyncio
 import hmac
@@ -28,7 +28,7 @@ from config import HELIUS_RPC_URL
 # ── Constants ─────────────────────────────────────────────────────────────────
 BOTS_DIR           = Path("bots")
 FLEET_PATH         = Path("fleet.json")
-BOT_IDS            = [1, 2, 3, 4, 5, 6]
+BOT_IDS            = [1]
 ACTIVATION_MIN_SOL = 0.1
 
 # ── Auth ──────────────────────────────────────────────────────────────────────
@@ -180,43 +180,17 @@ def _kill_orphans() -> None:
 # ── Fleet state ───────────────────────────────────────────────────────────────
 
 def _default_fleet() -> dict:
-    bots = []
-    for i in BOT_IDS:
-        if i <= 3:
-            # Bots 1-3 start undeployed. Deploy a bot from the dashboard (generates a
-            # keypair) or point KEYPAIR_PATH in your .env at an existing wallet.
-            b = {"id": i, "status": "undeployed", "pubkey": None,
-                 "keypair_path": None, "data_dir": f"bots/bot{i}"}
-        else:
-            b = {"id": i, "status": "row2_locked", "pubkey": None,
-                 "keypair_path": None, "data_dir": f"bots/bot{i}"}
-        bots.append(b)
-    return {"bots": bots, "row2_unlocked": False}
-
-
-def _migrate_fleet(fleet: dict) -> dict:
-    """Add bots 4-6 as row2_locked and row2_unlocked flag if missing from existing fleet.json."""
-    existing_ids = {b["id"] for b in fleet["bots"]}
-    changed = False
-    for i in range(4, 7):
-        if i not in existing_ids:
-            fleet["bots"].append({"id": i, "status": "row2_locked",
-                                  "pubkey": None, "keypair_path": None,
-                                  "data_dir": f"bots/bot{i}"})
-            changed = True
-    if "row2_unlocked" not in fleet:
-        fleet["row2_unlocked"] = False
-        changed = True
-    if changed:
-        save_fleet(fleet)
-    return fleet
+    # Single bot. Starts undeployed. Deploy it from the dashboard (generates a
+    # keypair) or point KEYPAIR_PATH in your .env at an existing wallet.
+    bots = [{"id": i, "status": "undeployed", "pubkey": None,
+             "keypair_path": None, "data_dir": f"bots/bot{i}"} for i in BOT_IDS]
+    return {"bots": bots}
 
 
 def load_fleet() -> dict:
     if FLEET_PATH.exists():
         try:
-            fleet = json.loads(FLEET_PATH.read_text())
-            return _migrate_fleet(fleet)
+            return json.loads(FLEET_PATH.read_text())
         except Exception:
             pass
     return _default_fleet()
@@ -458,7 +432,7 @@ async def index():
     )
 
 
-# ── Brand assets ($Vault logo) ──────────────────────────────────────────────────
+# ── Brand assets (Dat Pip Boi logo) ──────────────────────────────────────────────────
 # Static, public, read-only. Allowlisted filenames only — no path traversal, no
 # arbitrary file reads. Served same-origin so the CSP img-src 'self' permits them.
 _ASSET_TYPES = {
@@ -591,47 +565,10 @@ async def get_fleet(request: Request):
     authed = _is_authed(request)
     fleet = load_fleet()
 
-    # Auto-unlock row 2 if any active bot has achieved first prestige (payout_milestones total > 0)
-    if not fleet.get("row2_unlocked", False):
-        for bot in fleet["bots"]:
-            if bot["status"] == "active":
-                sf = bot_dir(bot["id"]) / "status.json"
-                if sf.exists():
-                    try:
-                        live = json.loads(sf.read_text())
-                        total_payouts = sum(
-                            m.get("payout_count", 0)
-                            for m in live.get("payout_milestones", [])
-                        )
-                        if total_payouts > 0:
-                            fleet["row2_unlocked"] = True
-                            for b in fleet["bots"]:
-                                if b.get("status") == "row2_locked":
-                                    b["status"] = "undeployed"
-                            # S80: GEN-2 SEEDING — copy the winner's PROVEN SIZE gene to the
-                            # losers + bots 4-6 so the new fleet launches on the winning gene,
-                            # not the default. Fires exactly once (guarded by row2_unlocked) and
-                            # only on a genuine prestige (total_payouts>0) → honours the operator
-                            # rule structurally. Exception-wrapped so it can never break /api/fleet.
-                            try:
-                                import gene_propagation as _gp
-                                _wg, _rows = _gp.plan(bot["id"])
-                                _n = _gp.propagate(bot["id"], _wg, _rows, "auto-unlock (first prestige)")
-                                print(f"[Fleet] 🧬 Gene propagation — Bot #{bot['id']}'s gene → {_n} bot(s)", flush=True)
-                            except Exception as _e:
-                                print(f"[Fleet] gene propagation skipped: {_e}", flush=True)
-                            save_fleet(fleet)
-                            print(f"[Fleet] ⚡ Row 2 UNLOCKED — Bot #{bot['id']} achieved first prestige!", flush=True)
-                            break
-                    except Exception:
-                        pass
-
-    row2_unlocked = fleet.get("row2_unlocked", False)
     _STRIP = {"keypair_path", "data_dir"}   # never expose filesystem paths publicly
     result = []
     for bot in fleet["bots"]:
         entry = {k: v for k, v in bot.items() if k not in _STRIP}
-        entry["row2_unlocked"] = row2_unlocked
         if bot["status"] == "active":
             sf = bot_dir(bot["id"]) / "status.json"
             raw_live = json.loads(sf.read_text()) if sf.exists() else None
@@ -1150,8 +1087,6 @@ async def activate_bot(bot_id: int, request: Request):
     bot = next((b for b in fleet["bots"] if b["id"] == bot_id), None)
     if not bot:
         return JSONResponse({"ok": False, "error": "Bot not found"})
-    if bot["status"] == "row2_locked":
-        return JSONResponse({"ok": False, "error": "Row 2 locked — achieve ◎2.0 prestige to unlock"})
     if bot["status"] != "undeployed":
         return JSONResponse({"ok": False, "error": f"Bot is already {bot['status']}"})
 

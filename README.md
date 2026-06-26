@@ -37,13 +37,13 @@ evidence-gated learning loop, and a design built to be operated through your own
 
 Dat Pip Boi is a self-contained autonomous trading system for Solana memecoins:
 
-- **A fleet of trading bots** that discover, score, size, and exit positions on
-  their own, each on its own wallet.
-- **A shared discovery sidecar** that streams candidate tokens from multiple
+- **A trading bot** that discovers, scores, sizes, and exits positions on its
+  own, on your wallet.
+- **A discovery sidecar** that streams candidate tokens from multiple
   free data sources (GeckoTerminal, DexScreener, bonding-curve flow, optional
-  Bitquery) so the fleet isn't starved.
-- **A live "Pip-Boy" terminal dashboard** at `localhost:8080` — fleet status,
-  P&L, the ledger of every trade with *why* it closed, and per-bot internals.
+  Bitquery) so the bot isn't starved.
+- **A live "Pip-Boy" terminal dashboard** at `localhost:8080` — bot status,
+  P&L, the ledger of every trade with *why* it closed, and its internals.
 - **An evidence loop + deploy gates** — the system logs the forward return of
   every token it scores, learns rules from realized outcomes, and refuses to
   size up an edge until it has *proven* itself on real, fee-inclusive results.
@@ -56,7 +56,7 @@ Dat Pip Boi is a self-contained autonomous trading system for Solana memecoins:
 
 The codebase was built to be **read, operated, and extended conversationally.**
 Point Claude at this repo and it can: explain any part, walk you through setup,
-restart the fleet, read the dashboards, run the read-only analysis tools, and
+restart the bot, read the dashboards, run the read-only analysis tools, and
 help you tune things — all guided by [`CLAUDE.md`](CLAUDE.md), which encodes the
 architecture, the operating rules, and the safety boundaries.
 
@@ -72,9 +72,9 @@ cd datpipboi && python3 vault_status.py
 A phosphor-green status card prints right in your terminal — no signup, no
 funding, nothing to lose (it's pure stdlib, runs on the system `python3`). Once
 it's actually trading, that same card shows your live vault, P&L, and every
-trade with *why* it closed. Like the vibe? Run the full fleet 👇
+trade with *why* it closed. Like the vibe? Run the full bot 👇
 
-### 🚀 Run the full fleet
+### 🚀 Run the full bot
 
 ```bash
 # (from the cloned repo)
@@ -94,7 +94,7 @@ pip install -r requirements.txt
   wallet, and running it.
 - **⌨️ In the terminal:** `python3 setup.py` runs an interactive wizard.
 
-Then in the dashboard, click **Activate** on a bot — it **generates a fresh
+Then in the dashboard, click **Activate** — it **generates a fresh
 wallet, shows you the address to fund, and starts logging trades.**
 
 👉 **Full step-by-step (wallet, keys, funding, operating):** see [SETUP.md](SETUP.md).
@@ -124,7 +124,7 @@ Wallet, progress to the ◎2.0 prestige goal, today's P&L, win/loss, and every
 recent trade **with the reason it closed**. Prefer the terminal? Same thing, one word:
 
 ```bash
-./vault            # bot 1     ·     ./vault --all     ·     ./vault --trades 8
+./vault            # your bot     ·     ./vault --trades 8
 ```
 
 It's read-only — safe to run any time, trading or stopped. For the full graphical
@@ -133,13 +133,13 @@ view, the dashboard is at **http://localhost:8080**.
 ## How it fits together
 
 ```
-   data sources                discovery_service.py             the fleet
+   data sources                discovery_service.py             the bot
  ┌───────────────┐   feeds   ┌──────────────────────┐  snapshot  ┌──────────┐
- │ GeckoTerminal │──────────▶│  shared sidecar:     │───────────▶│  bot 1   │
- │ DexScreener   │           │  poll · score-prep · │            │  bot 2   │  each:
- │ bonding curve │           │  publish snapshot    │            │  bot 3   │  observe → score
- │ Bitquery (opt)│           └──────────────────────┘            └────┬─────┘  → admit → size
- └───────────────┘                                                    │        → execute → exit
+ │ GeckoTerminal │──────────▶│  discovery sidecar:  │───────────▶│          │  observe → score
+ │ DexScreener   │           │  poll · score-prep · │            │   bot    │  → admit → size
+ │ bonding curve │           │  publish snapshot    │            │          │  → execute → exit
+ │ Bitquery (opt)│           └──────────────────────┘            └────┬─────┘
+ └───────────────┘                                                    │
                                                                       ▼
                               dashboard.py  ◀───────  status / trades.db / positions
                               http://localhost:8080
@@ -147,7 +147,7 @@ view, the dashboard is at **http://localhost:8080**.
 
 - **`observer.py`** scores each candidate and decides admission.
 - **`stoic_strategy.py`** owns position lifecycle and exits (stops, trails, rug guards).
-- **`main.py`** is the per-bot loop: signals → execution → exits → sizing.
+- **`main.py`** is the bot's loop: signals → execution → exits → sizing.
 - **`signal_lab.py` / `strategy_brain.py`** are the evidence loop: log forward
   returns, learn rules, promote only what proves out.
 - **Gates** (`prestige_tracker.py`, `arm_genes.py`, `kill_criterion.py`) decide

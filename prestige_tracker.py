@@ -219,7 +219,7 @@ def report(deploy_if_ready=False):
         pct = 100 * bal / GOAL_SOL
         ev_s = f"{ev:+.3%}" if abs(ev) > 1e-9 else "n/a (need size_sol on closes)"
         print(f"  Bot{b}: ◎{bal:.4f}  ({pct:4.0f}% of goal)  | clean: n={n} EV/trade={ev_s} ~{tpd:.0f} trades/day")
-    print(f"  FLEET TOTAL: ◎{total:.4f}   (nearest bot to ◎2.0 leads the race)")
+    print(f"  FLEET TOTAL: ◎{total:.4f}   (double to ◎2.0 to prestige)")
 
     # ── deep_pool live readiness (the deploy gate) ──
     n, net, ghosts, gr = _fleet_deep_pool_stats()
