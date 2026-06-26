@@ -39,7 +39,7 @@
       radial-gradient(640px 440px at 16% -4%,rgba(61,251,110,.10),transparent 60%),
       radial-gradient(720px 540px at 94% 6%,rgba(46,232,92,.06),transparent 60%),
       radial-gradient(1000px 760px at 50% 120%,rgba(26,168,71,.08),transparent 60%)}
-  #cursor-fx{position:fixed;inset:0;z-index:0;pointer-events:none}
+  #cursor-fx{position:fixed;inset:0;z-index:0;pointer-events:none;max-width:100vw;max-height:100vh}
   main,nav,footer{position:relative;z-index:2}
   a{color:var(--g);text-decoration:none}
   a:hover{text-decoration:underline}
@@ -1050,7 +1050,7 @@ document.querySelectorAll('.copy').forEach(b=>b.addEventListener('click',()=>{
   const RAD0=1.0, RAD1=2.6;   /* dot radius: baseline → peak near cursor */
 
   function resize(){
-    dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;
+    dpr=Math.min(devicePixelRatio||1,2);W=document.documentElement.clientWidth;H=innerHeight;
     cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';
     ctx.setTransform(dpr,0,0,dpr,0,0);
     cols=Math.ceil(W/S)+1;rows=Math.ceil(H/S)+1;
