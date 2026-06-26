@@ -247,6 +247,9 @@
   .lstep p b{color:var(--txt);font-weight:600}
 
   @media(max-width:920px){
+    /* mobile mode: nothing is sticky here, so we can safely clip horizontal overflow */
+    html,body{overflow-x:hidden}
+    nav{position:static}
     .loop-grid{grid-template-columns:1fr;gap:0}
     .loop-stick{position:static}
     #live .term{margin-bottom:6px}
