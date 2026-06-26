@@ -62,9 +62,22 @@ architecture, the operating rules, and the safety boundaries.
 
 ## Quickstart
 
+### 👀 Try it in 30 seconds — no wallet, no keys, no risk
+
 ```bash
 git clone https://github.com/Onasidequestt/datpipboi.git
-cd datpipboi
+cd datpipboi && python3 vault_status.py
+```
+
+A phosphor-green status card prints right in your terminal — no signup, no
+funding, nothing to lose (it's pure stdlib, runs on the system `python3`). Once
+it's actually trading, that same card shows your live vault, P&L, and every
+trade with *why* it closed. Like the vibe? Run the full fleet 👇
+
+### 🚀 Run the full fleet
+
+```bash
+# (from the cloned repo)
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 ./run.sh                      # opens the dashboard at http://localhost:8080
