@@ -248,8 +248,8 @@
 
   @media(max-width:920px){
     .loop-grid{grid-template-columns:1fr;gap:0}
-    .loop-stick{position:sticky;top:64px;z-index:10;background:linear-gradient(180deg,var(--bg2) 82%,transparent);
-        padding-bottom:14px}
+    .loop-stick{position:static}
+    #live .term{margin-bottom:6px}
     .term-body{height:252px;padding:14px 16px}
     .stage{inset:14px 16px;font-size:16px;line-height:1.6}
     .stage .big{font-size:20px}
@@ -985,7 +985,7 @@ addEventListener('scroll',()=>{
     dots.forEach((d,j)=>d.classList.toggle('on',i===j));
     title.textContent=stages[i].dataset.title;
   }
-  if(!('IntersectionObserver'in window)){setStage(0);return;}
+  if(innerWidth<=920||!('IntersectionObserver'in window)){setStage(0);return;}
   const io=new IntersectionObserver(es=>{
     es.forEach(en=>{if(en.isIntersecting)setStage(steps.indexOf(en.target))});
   },{rootMargin:'-42% 0px -42% 0px',threshold:0});
