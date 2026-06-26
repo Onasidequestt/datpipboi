@@ -211,8 +211,8 @@ def render_bot(bot: int, n_trades: int = 5) -> str:
     # wallet + prestige progress
     out.append(_line(f"{GREY}WALLET{RST}        {BOLD}{WHITE}◎ {wallet:.4f}{RST}",
                      _visible_len(f"WALLET        ◎ {wallet:.4f}")))
-    out.append(_line(f"{GREY}TO PRESTIGE{RST}   {DIM}◎ {PRESTIGE_GOAL:.1f}{RST}",
-                     _visible_len(f"TO PRESTIGE   ◎ {PRESTIGE_GOAL:.1f}")))
+    out.append(_line(f"{GREY}MILESTONE{RST}   {DIM}◎ {PRESTIGE_GOAL:.1f}{RST}",
+                     _visible_len(f"MILESTONE   ◎ {PRESTIGE_GOAL:.1f}")))
     pct = f"{frac*100:.0f}%"
     bar = _bar(frac)
     out.append(_line(f"{bar}  {WHITE}{pct}{RST}", _visible_len("█" * 34) + 2 + len(pct)))

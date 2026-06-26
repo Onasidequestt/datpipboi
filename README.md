@@ -109,7 +109,7 @@ English** — *"how's my bot doing?"* — and it prints one clean card right in 
 ║  $DATBOI · DATBOI                               ● ONLINE ║
 ╠══════════════════════════════════════════════════════════════╣
 ║  WALLET        ◎ 0.8007                                      ║
-║  TO PRESTIGE   ◎ 2.0                                         ║
+║  MILESTONE     ◎ 2.0                                         ║
 ║  ██████████████░░░░░░░░░░░░░░░░░░░░  40%                     ║
 ║  TODAY         +0.0000 ◎   break-even                        ║
 ║  RECORD        97 trades · 38W / 59L · 39% win               ║
@@ -120,7 +120,7 @@ English** — *"how's my bot doing?"* — and it prints one clean card right in 
 ╚══════════════════════════════════════════════════════════════╝
 ```
 
-Wallet, progress to the ◎2.0 prestige goal, today's P&L, win/loss, and every
+Wallet, progress toward the ◎2.0 prestige milestone (an internal graduation gate — not a target or promised return), today's P&L, win/loss, and every
 recent trade **with the reason it closed**. Prefer the terminal? Same thing, one word:
 
 ```bash

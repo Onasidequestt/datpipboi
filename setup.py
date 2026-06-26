@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Vault Bot — first-run setup wizard.
+DATBOI — first-run setup wizard.
 
 Run me:   python3 setup.py
 
@@ -24,7 +24,7 @@ G = "\033[1;32m"; D = "\033[2;32m"; Y = "\033[1;33m"; R = "\033[0m"; B = "\033[1
 def banner():
     print(f"""{G}
   ┌──────────────────────────────────────────────────┐
-  │   ⚙   V A U L T   B O T   —   S E T U P            │
+  │   ⚙   D A T B O I         —   S E T U P            │
   └──────────────────────────────────────────────────┘{R}
 """)
 

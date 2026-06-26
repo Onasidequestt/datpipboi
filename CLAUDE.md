@@ -189,31 +189,3 @@ When you propose changes, prefer ones that the gates can still judge honestly.
 When unsure, show the plan and let the user decide. You're the careful co-pilot,
 not the risk-taker.
 
----
-
-## Pip-Sol — the dead-simple one-wallet vault (talk to it in plain English)
-
-Pip-Sol is the stripped-down door to this bot for non-experts: **one wallet, set up in ~2 prompts,
-watched right here in the terminal — no browser, no dashboard.** You send it SOL and the deposit
-activates it; when it's in profit you run one command and 50% of profit comes home to your wallet
-(principal always protected, nothing moves on its own).
-
-When the user mentions *"pip-sol" / "my pip bot" / "the simple vault"*, map plain English to the
-`pip-sol` verb and paste the result back:
-
-| the user says… | run | notes |
-|---|---|---|
-| set up pip-sol | `python3 pip-sol setup` | ~2 prompts → a deposit address |
-| how's pip-sol? / are we up? | `python3 pip-sol status` | paste the card |
-| what's my deposit address? | `python3 pip-sol address` | |
-| start it | `python3 pip-sol start` | waits for the deposit to activate it |
-| send my profits home / harvest | `python3 pip-sol harvest` | sends 50% of profit home; **user confirms** |
-| where do profits go? / change payout wallet | `python3 pip-sol payout <addr>` | |
-| go live / trade for real | `python3 pip-sol golive` | spends real SOL — say so first |
-| stop it | `python3 pip-sol stop` | the SOL stays in the wallet |
-
-**Safety:** Pip-Sol runs the *careful* posture (proven runner lane + every guard), never writes
-`ev_sizing.json`, and **only moves money via `pip-sol harvest`, with your confirmation.** Real money,
-can lose, not a fund.
-| get my money back / withdraw | `python3 pip-sol withdraw [N]` | sends your SOL home (all, or ◎N) — the easy exit |
-| type pip-sol from anywhere | `python3 pip-sol install` | symlink onto PATH |
