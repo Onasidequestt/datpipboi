@@ -23,8 +23,8 @@ included [`CLAUDE.md`](CLAUDE.md) gives it everything it needs to do this with y
 ## 2. Clone & install
 
 ```bash
-git clone https://github.com/<your-github-username>/vault-bot.git
-cd vault-bot
+git clone https://github.com/Onasidequestt/datpipboi.git
+cd datpipboi
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
