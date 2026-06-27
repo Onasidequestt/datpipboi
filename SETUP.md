@@ -1,12 +1,12 @@
 # Setting up your own DATBOI
 
-This walks you from zero to a running bot on the dashboard. Budget ~15–20 min.
-If you have Claude Code, you can also just say *"help me set up this repo"* — the
-included [`CLAUDE.md`](CLAUDE.md) gives it everything it needs to do this with you.
+This walks you from zero to a running bot on the dashboard. Budget ~15 min. If you
+have Claude Code, you can also just say *"help me set up this repo"* — the included
+[`CLAUDE.md`](CLAUDE.md) gives it everything it needs to do this with you.
 
-> ⚠️ **Before you start:** this trades real money on volatile markets and can
-> lose all of it. Use a **brand-new wallet** funded with an amount you are 100%
-> okay losing. Read the disclaimer in [README.md](README.md).
+> ⚠️ **Before you start:** this trades real money on volatile markets and can lose
+> all of it. Use a **brand-new wallet** funded with an amount you are 100% okay
+> losing. Read the disclaimer in [README.md](README.md) and [SECURITY.md](SECURITY.md).
 
 ---
 
@@ -14,11 +14,10 @@ included [`CLAUDE.md`](CLAUDE.md) gives it everything it needs to do this with y
 
 - **Python 3.9 or newer** — check with `python3 --version`
 - **macOS or Linux**
-- The **Solana CLI** (for creating a wallet) — install:
-  ```bash
-  sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
-  ```
 - A free **Helius** account → https://dashboard.helius.dev
+
+That's it. You do **not** need the Solana CLI or to create a wallet by hand — the
+dashboard generates one for you (the bring-your-own-keypair path is in step 6).
 
 ## 2. Clone & install
 
@@ -30,72 +29,63 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## 3. Create a trading wallet
-
-Create a **fresh** keypair just for this bot (never reuse your main wallet):
-
-```bash
-solana-keygen new --outfile ~/.config/solana/vault-bot.json
-```
-
-Note the **pubkey** it prints — that's the address you'll fund. Then **fund it
-with a small amount of SOL** (e.g. 0.1–0.5 SOL to start). The bot sizes every
-trade from the live wallet balance, so a small balance = small trades.
-
-## 4. Get a Helius API key
+## 3. Get a Helius API key
 
 1. Go to https://dashboard.helius.dev → create a project.
-2. Copy the **API key**.
+2. Copy the **API key**. The free tier is enough to begin.
 
-The free tier is enough to begin. (You can add more keys later to spread rate
-limits — see `HELIUS_API_KEY_1..3` in `.env.example`.)
-
-## 5. Run it
+## 4. Run it
 
 ```bash
-./run.sh
+./datboi run        # (or ./run.sh) — starts the discovery sidecar, dashboard, and bot
 ```
 
-This starts the **discovery sidecar**, the **dashboard**, and the **bot**, and
-prints your **dashboard PIN**. Open:
+It prints your **dashboard PIN** (you'll use it to unlock admin actions). Then open:
 
 ```
 http://localhost:8080
 ```
 
-## 6. Finish setup in the browser
+## 5. Finish setup in the browser
 
 On first run the dashboard shows a **setup page**. Enter:
 
-- your **dashboard PIN** (printed in the terminal by `./run.sh`),
+- your **dashboard PIN** (printed in the terminal by `./datboi run`),
 - your **Helius** API key *(required — link to get one is on the page)*,
 - your **Bitquery** key *(optional)*,
 
-…and click **Save & continue**. Then restart the bot (`Ctrl-C`, `./run.sh`) and
-reload — the full dashboard appears.
+…and click **Save & continue**. Then restart (`Ctrl-C`, `./datboi run`) and reload —
+the full dashboard appears.
 
-> **Prefer not to use the browser?** Two alternatives, same result:
-> - **Terminal wizard:** `python3 setup.py` (interactive, writes `.env`).
-> - **Ask your Claude:** open the repo in Claude Code and say *"set this up for
->   me"* — `CLAUDE.md` gives it what it needs.
+> **Prefer not to use the browser?** Two equivalent alternatives:
+> - **Terminal wizard:** `python3 src/setup.py` (interactive, writes `.env`).
+> - **Ask your Claude:** open the repo in Claude Code and say *"set this up for me."*
 >
-> Re-run `python3 setup.py` (or revisit `/setup`) anytime to change settings.
+> Re-run `python3 src/setup.py` anytime to change settings.
 
-> **On Linux** (no `caffeinate`): run the sidecar + dashboard directly instead of `./run.sh`:
+## 6. Get a wallet trading
+
+In the dashboard, the bot starts **undeployed**. Unlock with your PIN and click
+**Activate** — DATBOI **generates a fresh trading wallet and shows you its address.**
+**Fund that address** with a small amount of SOL (e.g. 0.1–0.5 to start). The bot
+sizes every trade from the live balance, so a small balance = small trades, and it
+begins trading on the next cycle.
+
+> **Advanced — bring your own keypair instead of letting DATBOI generate one:**
+> create a fresh keypair with the official Solana CLI and point `KEYPAIR_PATH` at it.
 > ```bash
-> python3 discovery_service.py &      # the discovery sidecar
-> python3 dashboard.py                # the dashboard (spawns the bot)
+> sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"   # official Anza installer
+> solana-keygen new --outfile ~/.config/solana/datboi.json
 > ```
+> Then set `KEYPAIR_PATH=~/.config/solana/datboi.json` in `.env` (or via the wizard)
+> and **never reuse your main wallet.**
 
-## 7. Deploy the bot
+Start by just **watching**: the dashboard shows every candidate scored, every trade
+opened, and every close *with the reason why*. Get a feel for it before you scale.
 
-In the dashboard, the bot starts **undeployed**. Click to deploy it — it will
-either generate a keypair for the bot or use the one at `KEYPAIR_PATH`. Fund
-that wallet, and the bot begins trading on the next cycle.
-
-Start by just **watching**: the dashboard shows every candidate scored, every
-trade opened, and every close *with the reason why*. Get a feel for it before
-you scale anything.
+> **On Linux:** `./run.sh` auto-detects the missing macOS `caffeinate` and runs the
+> dashboard directly — no extra steps. (You can also run the pieces by hand:
+> `python3 src/discovery_service.py &` then `python3 src/dashboard.py`.)
 
 ---
 
@@ -103,39 +93,39 @@ you scale anything.
 
 - **Dashboard tabs:** `SCOUT` (what it's seeing), `TRADE` (live positions),
   `LEDGER` (every closed trade + why), `GENE` (the bot's internals + the gate).
-- **Restart the bot:** `Ctrl-C` in the `run.sh` terminal, then `./run.sh` again.
+- **Restart:** `Ctrl-C` in the `./datboi run` terminal, then `./datboi run` again.
+- **Check status anytime (read-only):** `./datboi` (or `./datboi status --trades 8`).
 - **Read-only health/analysis tools** (safe to run anytime):
   ```bash
-  python3 prestige_tracker.py     # balance, the deploy gate, days-to-goal
-  python3 edge_report.py --by-play # realized edge by strategy, fee-aware
-  python3 kill_criterion.py        # the pre-registered "is the edge real?" verdict
+  ./datboi prestige_tracker     # balance, the deploy gate, days-to-goal
+  ./datboi edge_report --by-play # realized edge by strategy, fee-aware
+  ./datboi kill_criterion        # the pre-registered "is the edge real?" verdict
   ```
+- **Run the test suite:** `./datboi test`
 
 ## Changing settings (the easy knobs)
 
 | What | How |
 |---|---|
-| **Max trade size** | In the dashboard, use the **size buttons**: `small` / `medium` / `large` = 50% / 75% / 100% of wallet max per trade. (Writes `bots/botN/size_mode.json`.) |
-| **RPC node** | Set `RPC_URL=...` in `.env` to route through a custom node, or leave blank to use Helius. Re-run `python3 setup.py` to set it interactively. |
-| **API keys / capital / wallet path** | Re-run `python3 setup.py` anytime — it keeps your current values as defaults. |
+| **Max trade size** | In the dashboard, use the **size buttons** (`small`/`medium`/`large`). |
+| **RPC node** | Set `RPC_URL=...` in `.env`, or re-run `python3 src/setup.py`. |
+| **API keys / capital / wallet path** | Re-run `python3 src/setup.py` anytime — it keeps your current values as defaults. |
 | **Pause / deploy the bot** | Dashboard buttons (unlock with your PIN first). |
 
-Restart the bot after changing `.env` (`Ctrl-C`, then `./run.sh`). Dashboard
-size buttons take effect live — no restart needed.
+Restart after changing `.env`. Dashboard size buttons take effect live — no restart.
 
 ## The one rule
 
-**Never manually enable EV-sizing** (don't hand-write `bots/botN/ev_sizing.json`).
-Sizing up an unproven edge loses money faster. The gates exist to arm sizing
-*only* when the edge has proven itself on real results. Let them do their job.
-This is rule #1 in [`CLAUDE.md`](CLAUDE.md) too.
+**Never manually enable EV-sizing** (don't hand-write `src/bots/botN/ev_sizing.json`).
+Sizing up an unproven edge loses money faster. The gates exist to arm sizing *only*
+when the edge has proven itself on real results. Let them do their job. This is rule
+#1 in [`CLAUDE.md`](CLAUDE.md) too.
 
 ## Optional extras
 
-- **Reboot-durable uptime (macOS):** `deploy/README.md` sets up LaunchAgents so
-  the bot survives reboots and crashes.
-- **Public Telegram bridge:** `telegram/` broadcasts a sanitized status pulse.
-- **Advisory Claude agents:** `agents/` runs hourly analysts (needs an
+- **Reboot-durable uptime (macOS):** `./deploy/install.sh` sets up LaunchAgents so
+  the bot survives reboots and crashes. See [`deploy/README.md`](deploy/README.md).
+- **Advisory Claude agents:** `src/agents/` runs hourly analysts (needs an
   `ANTHROPIC_API_KEY`). Advisory only — they never touch your funds.
 
 ## Troubleshooting
@@ -143,10 +133,10 @@ This is rule #1 in [`CLAUDE.md`](CLAUDE.md) too.
 | Symptom | Likely cause / fix |
 |---|---|
 | Dashboard won't load | Port 8080 in use, or `run.sh` exited — check the terminal output. |
-| "0 candidates" / bots idle | Free data-source rate limits, or a genuinely quiet market. It self-recovers; see `discovery_service.py`. |
+| "0 candidates" / bot idle | Free data-source rate limits, or a quiet market. It self-recovers. |
 | No trades happening | The bot is selective by design. Check the `SCOUT` tab for skip reasons. |
-| `int | None` syntax error | You're on Python <3.9 — upgrade. |
-| Wallet shows 0 / no trades | The bot only trades the SOL actually in `KEYPAIR_PATH`'s wallet. Fund it. |
+| `int \| None` syntax error | You're on Python <3.9 — upgrade. |
+| Wallet shows 0 / no trades | The bot only trades the SOL actually in your wallet. Fund it. |
 
 Stuck? Open the repo in Claude Code and ask — `CLAUDE.md` makes it a capable
 co-pilot for this exact codebase.

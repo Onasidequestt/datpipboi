@@ -7,12 +7,18 @@ loop. This file is your map and your rulebook. Read it before acting.
 The person you're helping owns the wallet and the risk. Your job is to help them
 **understand, set up, run, and reason about** this system — carefully.
 
+**Layout:** all code lives in `src/` (flat — `import wallet`, `import config`, etc.
+resolve because everything runs with `src/` as the working directory). Tests are in
+`tests/`. The `.env` lives at the repo root. The `./datboi` launcher at the root
+runs everything from `src/` for you — `./datboi status`, `./datboi run`,
+`./datboi setup`, `./datboi test`, or `./datboi <tool>` (e.g. `./datboi edge_report`).
+
 ---
 
 ## 🚦 Rules (read these first)
 
 1. **THE ONE RULE: never manually enable EV-sizing.** Do not hand-write or
-   create `bots/botN/ev_sizing.json`. Sizing up an unproven edge loses money
+   create `src/bots/botN/ev_sizing.json`. Sizing up an unproven edge loses money
    faster and corrupts the learning signal. Sizing is armed *only* by the gates
    (`arm_genes.py`) when the edge has proven itself on real, fee-inclusive
    results. If asked to "just size up," explain why the gate exists instead.
@@ -44,12 +50,12 @@ server, no browser. When the user says anything like *"how's my bot?"*,
 *"how's it doing?"*, *"check the bot"*, *"status?"*, *"are we up?"* — run:
 
 ```bash
-python3 vault_status.py            # the bot (the default)
-python3 vault_status.py --trades 8 # more recent trades
+./datboi status                    # the bot (the default)
+./datboi status --trades 8         # more recent trades
 ```
 
-(The user can also type `./vault` themselves — same thing, one word. You should
-just run `python3 vault_status.py`, which always works regardless of PATH setup.)
+(`./datboi` with no args does the same thing. If you'd rather call Python directly,
+`python3 src/status.py` works too.)
 
 It prints one clean terminal card: wallet ◎, progress toward the ◎2.0 prestige
 goal, today's P&L, net realized, win/loss record, open positions, and the recent
@@ -105,29 +111,28 @@ data sources → discovery_service.py (sidecar) → bot (main.py) → dashboard.
 - `prove_edge.py`, `ride_ab.py`, `edge_report.py`, `regime_realized.py`,
   `fee_report.py` — realized-EV analysis, by strategy and exit.
 
+(All of the above live in `src/`.)
+
 **Dashboard / ops**
-- `dashboard.py`, `templates/` — the web UI (`localhost:8080`).
-- `run.sh` — starts sidecar + dashboard + bots.
-- `deploy/` — optional macOS LaunchAgents for reboot-durable uptime.
-
-**Optional**
-- `agents/` — advisory Claude agents (needs `ANTHROPIC_API_KEY`); advisory only,
+- `src/dashboard.py`, `src/templates/` — the web UI (`localhost:8080`).
+- `run.sh` / `datboi` — launchers (start sidecar + dashboard + bot).
+- `deploy/` — optional macOS LaunchAgents for reboot-durable uptime (`deploy/install.sh`).
+- `src/agents/` — advisory Claude agents (needs `ANTHROPIC_API_KEY`); advisory only,
   no path to funds.
-- `telegram/` — a read-only public Telegram broadcast bridge.
 
-## Where state lives (all gitignored, machine-local)
+## Where state lives (all gitignored, machine-local, under src/)
 
-- `bots/botN/` — per-bot: `keypair.json`, `trades.db`, `status.json`,
+- `src/bots/botN/` — per-bot: `keypair.json`, `trades.db`, `status.json`,
   `positions.json`, `balance_history.jsonl`, and per-feature "canary" JSONs
   (each enables one opt-in behavior; absent = off).
-- `shared_memory/` — `forward_obs.jsonl` (the evidence log), the brain's state,
+- `src/shared_memory/` — `forward_obs.jsonl` (the evidence log), the brain's state,
   the discovery snapshot, sidecar heartbeat.
-- `logs/` — run logs.
+- `src/logs/` — run logs.
 
 ## Running & restarting
 
 ```bash
-./run.sh                 # start everything (sidecar + dashboard + bot)
+./datboi run             # start everything (sidecar + dashboard + bot); ./run.sh also works
 # stop: Ctrl-C in that terminal (it tears down the whole process group)
 ```
 
@@ -136,15 +141,16 @@ data sources → discovery_service.py (sidecar) → bot (main.py) → dashboard.
 - **Code changes need a restart to take effect.** A subtle trap: a change on
   disk is *not* live until the process restarts. If a fix "isn't working,"
   check that the running process started *after* you edited the file.
-- **macOS** `run.sh` uses `caffeinate` (no-op problem on Linux — run
-  `discovery_service.py` and `dashboard.py` directly there).
+- **macOS** `run.sh` uses `caffeinate`; on Linux it auto-falls-back to running the
+  dashboard directly (or run `python3 src/discovery_service.py` and
+  `python3 src/dashboard.py` yourself).
 
 ## Liveness (don't trust log greps alone)
 
 The run log is block-buffered, so advancing log lines aren't proof of life.
 Confirm the bot is alive via:
-- `bots/botN/status.json` mtime (freshly updated), and
-- `shared_memory/sidecar_heartbeat.json`, and
+- `src/bots/botN/status.json` mtime (freshly updated), and
+- `src/shared_memory/sidecar_heartbeat.json`, and
 - the actual `main.py` / `discovery_service.py` processes.
 
 ## The evidence & gate philosophy (why it's cautious)
@@ -159,23 +165,23 @@ When you propose changes, prefer ones that the gates can still judge honestly.
 ## Common things the user may ask you to do
 
 - **"Help me set it up" / "onboard me"** → walk through `SETUP.md`. The flow:
-  `pip install -r requirements.txt` → `./run.sh` → finish setup. There are three
+  `pip install -r requirements.txt` → `./datboi run` → finish setup. There are three
   equivalent ways to enter keys — pick whatever the user prefers:
   (1) the **browser setup page** at `http://localhost:8080` (first run shows it),
-  (2) the **terminal wizard** `python3 setup.py`, or
+  (2) the **terminal wizard** `python3 src/setup.py`, or
   (3) **you do it for them** — help them get a free Helius key
   (https://dashboard.helius.dev) and optionally a Bitquery key
   (https://account.bitquery.io), then write `.env` (you may run `python3
-  setup.py`, or set the values — but **never echo the secret values back** in
+  src/setup.py`, or set the values — but **never echo the secret values back** in
   chat). Then they click **Activate** in the dashboard, which generates the
   wallet and starts trading. Restart the bot after `.env` changes.
-- **"Is it making money?"** → `python3 edge_report.py --by-play`,
-  `python3 prestige_tracker.py`, `python3 kill_criterion.py`. Report honestly,
+- **"Is it making money?"** → `./datboi edge_report --by-play`,
+  `./datboi prestige_tracker`, `./datboi kill_criterion`. Report honestly,
   including when the answer is "no / not proven."
 - **"Why did it (not) trade X?"** → the `SCOUT` tab + the bot's logs carry skip
   reasons; the ledger (`trades.db` / `LEDGER` tab) carries exit reasons.
-- **"Restart it"** → Ctrl-C the `run.sh` terminal, `./run.sh`. Verify liveness.
-- **"Tune the strategy"** → explain the tradeoff, prefer a `bots/botN/` canary
+- **"Restart it"** → Ctrl-C the `./datboi run` terminal, `./datboi run`. Verify liveness.
+- **"Tune the strategy"** → explain the tradeoff, prefer a `src/bots/botN/` canary
   file (opt-in, reversible — delete it to revert), keep it reversible, never
   touch `ev_sizing.json` by hand.
 
@@ -184,7 +190,7 @@ When you propose changes, prefer ones that the gates can still judge honestly.
 - Anything that **moves or risks funds** beyond normal operation.
 - Editing admission / sizing / exit **trading logic**.
 - `git push`, making a repo public, or anything that **leaves the machine**.
-- Deleting `bots/` state, databases, or wallet files.
+- Deleting `src/bots/` state, databases, or wallet files.
 
 When unsure, show the plan and let the user decide. You're the careful co-pilot,
 not the risk-taker.

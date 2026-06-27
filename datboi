@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# datboi — one command for the whole bot. Runs everything from src/ so paths
+# stay consistent no matter where you call it from.
+#
+#   ./datboi                 # status card (default — "how's my bot?")
+#   ./datboi status --trades 8
+#   ./datboi run             # start the bot (sidecar + dashboard + bot)
+#   ./datboi setup           # interactive key/wallet wizard
+#   ./datboi test            # run the test suite
+#   ./datboi edge_report --by-play     # any analysis tool in src/
+#   ./datboi kill_criterion            # ...e.g. the deploy-gate verdict
+#
+# Type just `datboi` from anywhere? Symlink it:  ln -s "$PWD/datboi" /usr/local/bin/datboi
+set -euo pipefail
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+cmd="${1:-status}"
+[ $# -gt 0 ] && shift || true
+
+case "$cmd" in
+    run)
+        exec "$DIR/run.sh" "$@" ;;
+    test)
+        cd "$DIR"
+        rc=0
+        for t in tests/test_*.py; do python3 "$t" >/dev/null 2>&1 || { echo "✗ $t"; rc=1; }; done
+        [ $rc -eq 0 ] && echo "✓ all tests passed" || echo "✗ some tests failed — run them directly to see why"
+        exit $rc ;;
+    -h|--help|help)
+        sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//' ; exit 0 ;;
+    *)
+        # status, setup, or any analysis tool: run the matching src/<cmd>.py with src/ as CWD
+        if [ ! -f "$DIR/src/$cmd.py" ]; then
+            echo "datboi: unknown command or tool '$cmd' (no src/$cmd.py). Try: ./datboi --help" >&2
+            exit 2
+        fi
+        cd "$DIR/src"
+        exec python3 "$cmd.py" "$@" ;;
+esac

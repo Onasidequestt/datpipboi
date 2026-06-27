@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Vault-bot strategy_brain — hourly shadow-evolution + wire-to-live readiness check.
+     LaunchAgent (not cron): fires a missed job on wake (laptop sleeps). Each run harvests
+     matured observations into the durable store, re-scores all candidates on sellable obs,
+     applies shadow promotion/rollback within guardrails, and prints the wire-to-live verdict
+     (the 🎉 LIVE-READY moment). Reads-only against trade execution — never touches live SOL.
+
+     ⚠ Only ONE evolve loop should run. Before installing this, stop the nohup loop:
+       pkill -f "strategy_brain.py --evolve"
+
+     Install:
+       Install with: ./deploy/install.sh  (fills the real path + loads the agent)
+       launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.datboi.brain.plist
+       launchctl enable gui/$(id -u)/com.datboi.brain
+     Remove:
+       launchctl bootout gui/$(id -u)/com.datboi.brain
+     Run once now (test):
+       launchctl kickstart -k gui/$(id -u)/com.datboi.brain
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.datboi.brain</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>-lc</string>
+    <string>cd __DATBOI_DIR__/src &amp;&amp; python3 strategy_brain.py --evolve --horizon 30</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>__DATBOI_DIR__/src</string>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>StartInterval</key>
+  <integer>3600</integer>
+  <key>StandardOutPath</key>
+  <string>__DATBOI_DIR__/src/logs/brain_loop.log</string>
+  <key>StandardErrorPath</key>
+  <string>__DATBOI_DIR__/src/logs/brain_loop.log</string>
+</dict>
+</plist>
