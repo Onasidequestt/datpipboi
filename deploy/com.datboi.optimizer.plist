@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Vault-bot goldilocks optimizer — runs run_optimizer.sh at 07:00 and 19:00 daily.
+     LaunchAgent (not cron): runs in your user session and fires missed jobs on wake,
+     which matters on a laptop that sleeps. Tuning is ALSO done in-process every 20
+     closes; this is a supplementary time-based refresh + fleet-combined re-fit.
+
+     Install:
+       Install with: ./deploy/install.sh  (fills the real path + loads the agent)
+       launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.datboi.optimizer.plist
+       launchctl enable gui/$(id -u)/com.datboi.optimizer
+     Remove:
+       launchctl bootout gui/$(id -u)/com.datboi.optimizer
+     Run once now (test):
+       launchctl kickstart -k gui/$(id -u)/com.datboi.optimizer
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.datboi.optimizer</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>-lc</string>
+    <string>cd __DATBOI_DIR__/src &amp;&amp; ./run_optimizer.sh</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>__DATBOI_DIR__/src</string>
+  <key>StartCalendarInterval</key>
+  <array>
+    <dict><key>Hour</key><integer>7</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Hour</key><integer>19</integer><key>Minute</key><integer>0</integer></dict>
+  </array>
+  <key>StandardOutPath</key>
+  <string>__DATBOI_DIR__/src/logs/goldilocks_cron.log</string>
+  <key>StandardErrorPath</key>
+  <string>__DATBOI_DIR__/src/logs/goldilocks_cron.log</string>
+</dict>
+</plist>

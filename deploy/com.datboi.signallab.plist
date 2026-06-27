@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Vault-bot signal_lab logger — the data feed for the evidence loop.
+     Continuous daemon (rides discovery_snapshot.json, zero trade risk): RunAtLoad + KeepAlive
+     so it restarts on crash AND survives a reboot/logout (the nohup loop does not). Records
+     every scored token's features + forward returns to shared_memory/signal_log.jsonl; the
+     brain harvests matured rows into the durable forward_obs.jsonl. S63: also records the live
+     debater verdict (dbt) and intra-hold drawdown (fwd_min) per row.
+
+     ⚠ Only ONE signal_lab --log should run. Before installing this, stop the nohup loop:
+       pkill -f "signal_lab.py --log"
+
+     Install:
+       Install with: ./deploy/install.sh  (fills the real path + loads the agent)
+       launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.datboi.signallab.plist
+       launchctl enable gui/$(id -u)/com.datboi.signallab
+     Remove:
+       launchctl bootout gui/$(id -u)/com.datboi.signallab
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.datboi.signallab</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>-lc</string>
+    <string>cd __DATBOI_DIR__/src &amp;&amp; exec python3 signal_lab.py --log</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>__DATBOI_DIR__/src</string>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>__DATBOI_DIR__/src/logs/signal_lab.log</string>
+  <key>StandardErrorPath</key>
+  <string>__DATBOI_DIR__/src/logs/signal_lab.log</string>
+</dict>
+</plist>

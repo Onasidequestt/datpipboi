@@ -17,14 +17,15 @@ id.json
 .s74_backups/
 .s78_backups/
 .session_backups/
-bots/**/status.json
-bots/**/positions.json
-bots/**/balance_history.jsonl
+# (code + runtime state now live under src/ — match these at any depth)
+**/bots/**/status.json
+**/bots/**/positions.json
+**/bots/**/balance_history.jsonl
 shared_memory/
 logs/
-paper_lab/state/
-paper_lab/logs/
-paper_lab/results/
+**/paper_lab/state/
+**/paper_lab/logs/
+**/paper_lab/results/
 
 # ── python cruft ───────────────────────────────────────────────
 __pycache__/
