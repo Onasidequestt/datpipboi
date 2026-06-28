@@ -12,6 +12,10 @@ if [ ! -f .env ]; then
     python3 src/setup.py --bootstrap || exit 1
 fi
 
+# Preflight: catch the two things that make boot fail (wrong Python / missing deps)
+# and print the one-line fix instead of a scary traceback. Stdlib-only, always runs.
+python3 src/doctor.py --preflight || exit 1
+
 # DATBOI — boot banner (green phosphor)
 G=$'\033[1;32m'; D=$'\033[2;32m'; R=$'\033[0m'
 printf '\n'
@@ -46,6 +50,14 @@ trap '_shutdown EXIT' EXIT
 trap '_shutdown INT'  INT
 trap '_shutdown TERM' TERM
 trap '_log_sig HUP-IGNORED; pkill -HUP -f "main.py" 2>/dev/null || true' HUP
+
+# Surface the dashboard PIN (you type it into the setup page to save your keys /
+# unlock admin actions) so it's right above the server logs, not scrolled away.
+_PIN=$(grep -E '^DASHBOARD_PIN=' ../.env 2>/dev/null | cut -d= -f2 | tr -d ' ')
+if [ -n "$_PIN" ]; then
+    printf '%s  🔑 Dashboard PIN: %s%s%s  — enter it at http://localhost:%s to save your keys / unlock admin\n\n' \
+        "$D" "$G$B" "$_PIN" "$R" "$_PORT" 2>/dev/null || printf '  Dashboard PIN: %s\n\n' "$_PIN"
+fi
 
 # Start the discovery sidecar first — one shared polling process feeds the bot.
 python3 discovery_service.py &

@@ -11,7 +11,14 @@ The person you're helping owns the wallet and the risk. Your job is to help them
 resolve because everything runs with `src/` as the working directory). Tests are in
 `tests/`. The `.env` lives at the repo root. The `./datboi` launcher at the root
 runs everything from `src/` for you — `./datboi status`, `./datboi run`,
-`./datboi setup`, `./datboi test`, or `./datboi <tool>` (e.g. `./datboi edge_report`).
+`./datboi setup`, `./datboi doctor`, `./datboi test`, or `./datboi <tool>`
+(e.g. `./datboi edge_report`).
+
+**When the user is stuck on setup/install** ("it won't start", "ModuleNotFound",
+"no trades", "where's my PIN?") → run **`./datboi doctor`** first. It's a stdlib-only
+self-check (works even before `pip install`) that reports Python version, deps,
+`.env`, the Helius key, the dashboard PIN, the wallet, and the port — each with the
+exact fix. Paste its output back; it usually pinpoints the problem in one step.
 
 ---
 

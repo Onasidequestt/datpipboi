@@ -13,7 +13,8 @@ have Claude Code, you can also just say *"help me set up this repo"* — the inc
 ## 1. Prerequisites
 
 - **Python 3.9 or newer** — check with `python3 --version`
-- **macOS or Linux**
+- **macOS or Linux** (on **Windows**, use [WSL](https://learn.microsoft.com/windows/wsl/install) —
+  install Ubuntu, then follow these steps inside it)
 - A free **Helius** account → https://dashboard.helius.dev
 
 That's it. You do **not** need the Solana CLI or to create a wallet by hand — the
@@ -130,12 +131,23 @@ when the edge has proven itself on real results. Let them do their job. This is 
 
 ## Troubleshooting
 
+**First thing to try — the built-in checkup:**
+
+```bash
+./datboi doctor
+```
+
+It checks your Python version, dependencies, `.env`, API key, the dashboard PIN,
+the wallet, and the port — and tells you the **one command** to fix whatever's off.
+
 | Symptom | Likely cause / fix |
 |---|---|
-| Dashboard won't load | Port 8080 in use, or `run.sh` exited — check the terminal output. |
+| Dashboard won't load | Port 8080 in use, or `run.sh` exited — check the terminal output, or run `./datboi doctor`. |
+| `ModuleNotFoundError` on start | Dependencies not installed — `pip install -r requirements.txt` (in your venv). |
+| `SyntaxError` on start | You're on Python older than 3.9 — upgrade to 3.9+ (`python3 --version`). |
 | "0 candidates" / bot idle | Free data-source rate limits, or a quiet market. It self-recovers. |
 | No trades happening | The bot is selective by design. Check the `SCOUT` tab for skip reasons. |
-| `int \| None` syntax error | You're on Python <3.9 — upgrade. |
+| Forgot your dashboard PIN | It's in `.env` (`DASHBOARD_PIN=`), and `./datboi doctor` prints it. |
 | Wallet shows 0 / no trades | The bot only trades the SOL actually in your wallet. Fund it. |
 
 Stuck? Open the repo in Claude Code and ask — `CLAUDE.md` makes it a capable
