@@ -94,6 +94,10 @@ Then in the dashboard, click **Activate** — DATBOI **generates a fresh wallet,
 shows you the address to fund, and starts logging trades.** (Prefer your own
 keypair? Point `KEYPAIR_PATH` at it in `.env` instead.)
 
+> **Something not working?** Run **`./datboi doctor`** — it checks your Python,
+> dependencies, keys, wallet, and port, and tells you the one command to fix
+> whatever's off.
+
 👉 **Full step-by-step (keys, wallet, funding, operating):** see [SETUP.md](SETUP.md).
 
 ## Check on it — just ask Claude
@@ -176,7 +180,7 @@ The repo root stays minimal; all the code lives in **`src/`**, grouped by role:
 
 - **Python 3.9+**
 - **macOS or Linux** (`run.sh` uses macOS `caffeinate`; on Linux it falls back
-  automatically — see SETUP.md)
+  automatically — see SETUP.md). **Windows:** use [WSL](https://learn.microsoft.com/windows/wsl/install).
 - A **Helius** API key (free tier to start) and a **Solana wallet** (the dashboard
   can generate one for you)
 - A small amount of **SOL** to trade with (start tiny)

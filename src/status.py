@@ -169,12 +169,14 @@ def render_bot(bot: int, n_trades: int = 5) -> str:
                          _visible_len("No bot running yet — three steps to start:")))
         out.append(_line())
         for txt, plain in (
-            (f"{GREEN}1.{RST} {WHITE}./run.sh{RST}            {GREY}start the bot + dashboard{RST}",
-             "1. ./run.sh            start the bot + dashboard"),
+            (f"{GREEN}1.{RST} {WHITE}./datboi run{RST}         {GREY}start the bot + dashboard{RST}",
+             "1. ./datboi run         start the bot + dashboard"),
             (f"{GREEN}2.{RST} open {WHITE}localhost:8080{RST}  {GREY}→ click Activate, fund the wallet{RST}",
              "2. open localhost:8080  → click Activate, fund the wallet"),
             (f"{GREEN}3.{RST} {GREY}ask me {RST}{WHITE}“how's my bot?”{RST}{GREY} again once it trades{RST}",
              "3. ask me “how's my bot?” again once it trades"),
+            (f"{GREY}   stuck? run {RST}{WHITE}./datboi doctor{RST}{GREY} for a checkup{RST}",
+             "   stuck? run ./datboi doctor for a checkup"),
         ):
             out.append(_line(txt, _visible_len(plain)))
         out.append(f"{DIM}╚{'═' * (W + 2)}╝{RST}")
